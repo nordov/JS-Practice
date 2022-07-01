@@ -1,6 +1,7 @@
 class Calculator {
     constructor() {
-        this.state = "";
+        this.state = "0";
+        this.operation = [];
         this.screen = document.querySelector(".screen");
         this.clear = document.querySelector(".AC");
         this.neg = document.querySelector(".neg");
@@ -17,20 +18,36 @@ class Calculator {
         this.writeNumber = this.writeNumber.bind(this);
         this.negative = this.negative.bind(this);
         this.addition = this.addition.bind(this);
+        this.difference = this.difference.bind(this);
+        this.multiplication = this.multiplication.bind(this);
+        this.division = this.division.bind(this);
 
         this.addListeners();
         this.display("0");
     }
 
+    getState() {
+        return this.state;
+    }
+
     reset() {
-        this.state = "";
+        this.state = "0";
+        this.operation = [];
         this.clearLegends();
         this.display(this.state != "" ? this.state : '0');
     }
 
     updateState(value) {
+        
         this.state = value;
         this.display(this.state);
+    }
+
+    updateOperation(op) {
+
+        this.operation.push(this.state).push(op);
+        console.log(this.operation);
+
     }
 
     display(value) {
@@ -43,14 +60,20 @@ class Calculator {
         this.numKeys.forEach( numKey => {
             numKey.addEventListener('click', this.writeNumber);
         });
-        console.log(this.addKey);
         this.addKey.addEventListener('click', this.addition);
+        this.diffKey.addEventListener('click', this.difference);
+        this.mpyKey.addEventListener('click', this.multiplication);
+        this.divKey.addEventListener('click', this.division);
     }
 
     writeNumber(e) {
         e.preventDefault();
         if (this.state.length < 8)
-        this.updateState(this.state + e.target.value);
+        this.updateState(
+            this.state != "0" ?
+                e.target.value :
+                this.state + e.target.value
+        );
     }
 
     negative(e) {
@@ -66,15 +89,35 @@ class Calculator {
 
     addition(e) {
         e.preventDefault();
-        console.log(this.legends);
+        this.updateOpStack('+');
+        this.clearLegends();
+        document.querySelector(".icon.add").setAttribute("style", "display:block");
+    }
 
+    difference(e) {
+        e.preventDefault();
+        this.clearLegends();
+        document.querySelector(".icon.diff").setAttribute("style", "display:block");
+    }
+
+    multiplication(e) {
+        e.preventDefault();
+        this.clearLegends();
+        document.querySelector(".icon.mpy").setAttribute("style", "display:block");
+    }
+
+    division(e) {
+        e.preventDefault();
+        this.clearLegends();
+        document.querySelector(".icon.div").setAttribute("style", "display:block");
     }
 
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     let calc = new Calculator();
-    window.myState = calc.state;
+    window.myCalc = calc;
+    window.myOP = calc.opstack;
     console.log("Calculator started");
 });
 
